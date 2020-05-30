@@ -19,6 +19,8 @@ int main(int argc, char *argv[]) {
         sourceVertex = getSourceVertex(argc, argv);
         matrixData = readDataAsContinuousMemory(fileName);
 
+        if (matrixData.matrixDimention == -1) return 0;
+
         initData(sourceVertex, matrixData.matrixDimention);
 
         printf("\n");
@@ -54,9 +56,7 @@ int main(int argc, char *argv[]) {
 
     upc_barrier;
 
-    if (colsPerProcess.numberOfColumns > 0) {
-        run(colsPerProcess);
-    }
+    run(colsPerProcess);
 
     // save results
     if (MYTHREAD == 0){

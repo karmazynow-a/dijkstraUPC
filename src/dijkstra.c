@@ -97,7 +97,7 @@ void run (ColumnsToProcess cols){
 
    // TODO to be deleted before release
    if(MYTHREAD == 0){
-        puts("FINAL STATE");
+        puts("\n\nFINAL STATE");
         printState(cols.columnSize);
    }
 }
@@ -163,7 +163,7 @@ void printState( int numberOfColumns ){
     char str[1024] = "";
 
     for (int i = 0; i < numberOfColumns; ++i){
-        sprintf(str, "%s\nVertex: %d processed? %d predecessor: %d distance: %f", 
+        sprintf(str, "%s\nVertex: %d processed? %d predecessor: %d distance: %.2f", 
             str, i, processedColumns[i], predecessors[i], distances[i]);
     }
 

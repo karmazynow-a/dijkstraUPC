@@ -10,7 +10,7 @@ MatrixData readDataAsContinuousMemory(const char * fileName){
     MatrixData m  = {-1, NULL};
 
     if (fp == NULL) {
-        printf("Brak pliku %s\n", fileName);
+        printf("Brak pliku %s !\n", fileName);
         return m;
     }
 
