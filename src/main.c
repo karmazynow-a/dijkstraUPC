@@ -13,12 +13,15 @@ int main(int argc, char *argv[]) {
     // init
     upc_barrier;
 
+    int sourceVertex;
     if (MYTHREAD == 0){
         char * fileName = getInputFileName(argc, argv);
-        int sourceVertex = getSourceVertex(argc, argv);
+        sourceVertex = getSourceVertex(argc, argv);
         matrixData = readDataAsContinuousMemory(fileName);
 
         initData(sourceVertex, matrixData.matrixDimention);
+
+        printf("\n");
     }
 
     upc_barrier;
@@ -47,12 +50,17 @@ int main(int argc, char *argv[]) {
 
     }
 
-    printf(" Thread %d has %d columns\n", MYTHREAD, colsPerProcess.numberOfColumns);
+    printf("Thread %d has %d columns\n", MYTHREAD, colsPerProcess.numberOfColumns);
 
     upc_barrier;
 
     if (colsPerProcess.numberOfColumns > 0) {
         run(colsPerProcess);
+    }
+
+    // save results
+    if (MYTHREAD == 0){
+        printResultToFile(matrixData.matrixDimention, sourceVertex);
     }
 
     // finalize

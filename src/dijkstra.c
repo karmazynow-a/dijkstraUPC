@@ -1,5 +1,6 @@
-
+#include <stdio.h> 
 #include <math.h>
+#include <string.h>
 #include <upc.h>
 #include <upc_collective.h>
 
@@ -28,8 +29,6 @@ void initData ( int sourceVertex, int size ){
     }
 
     distances[sourceVertex] = 0;
-
-    printState(size);
 }
 
 void freeSharedData (){
@@ -69,7 +68,6 @@ void run (ColumnsToProcess cols){
 
       // find index of global value
       if (MYTHREAD == 0){
-        printf("global min %f \n", globalMin.distance);
         for(int i = 0; i < cols.columnSize; ++i){
             if( localMin[i] - globalMin.distance < 0.001){
                 globalMin.index = i;
@@ -97,7 +95,9 @@ void run (ColumnsToProcess cols){
       upc_wait;
    }
 
+   // TODO to be deleted before release
    if(MYTHREAD == 0){
+        puts("FINAL STATE");
         printState(cols.columnSize);
    }
 }
@@ -110,7 +110,6 @@ int checkIfAllVerticesHaveBeenProcessed(int numberOfColumns) {
    }
    return true;
 }
-:w
 
 VertexData findVertexWithMinimalDistance(ColumnsToProcess cols){
     VertexData closestVertex = {-1, INFINITY};
@@ -169,5 +168,44 @@ void printState( int numberOfColumns ){
     }
 
     puts(str);
+}
+
+void printResultToFile(int numberOfColumns, int sourceVertex){
+    FILE * fp = fopen("resultsUPC.txt", "w");
+
+    printDistances( fp, numberOfColumns, sourceVertex );
+    printPaths( fp, numberOfColumns, sourceVertex );
+
+    fclose(fp);
+}
+
+void printPaths( FILE * fp, int numberOfColumns, int sourceVertex ){
+    fprintf(fp, "============= PATHS =============\n");
+
+    for (int i = 0; i < numberOfColumns; ++i){
+        char path [100] = "";
+        char buff [100];
+        int vertex = i;
+
+        while (vertex != sourceVertex && vertex >= 0) {
+            strcpy(buff, path);
+            sprintf(path, "%d, %s", vertex, buff);
+            vertex = predecessors[vertex];
+        }
+       
+        strcpy(buff, path);
+        sprintf(path, "%d, %s", vertex, buff);
+
+        fprintf(fp, "%s\n", path);
+    }
+}
+
+void printDistances( FILE * fp, int numberOfColumns, int sourceVertex ){
+    fprintf(fp, "============ RESULTS ============\n");
+
+    for (int i = 0; i < numberOfColumns; ++i){
+        fprintf(fp, "Distance from vertex %d to %d: %.2f \n", 
+            sourceVertex, i, distances[i]);
+    }
 }
 

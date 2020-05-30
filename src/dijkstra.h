@@ -24,3 +24,9 @@ void performInnerLoop(VertexData closestVertex, ColumnsToProcess cols);
 
 // print states of processed data
 void printState();
+
+void printResultToFile(int numberOfColumns, int sourceVertex);
+
+void printPaths( FILE * fp, int numberOfColumns, int sourceVertex );
+
+void printDistances( FILE * fp, int numberOfColumns, int sourceVertex );
