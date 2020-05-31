@@ -1,0 +1,8 @@
+OUTPUT_DIRECTORY = ./docs/
+INPUT            = ../src/
+RECURSIVE        = YES
+PROJECT_NAME     = DijkstraUPC
+GENERATE_LATEX   = NO
+FULL_PATH_NAMES  = YES
+STRIP_FROM_PATH  = ..
+HAVE_DOT=NO

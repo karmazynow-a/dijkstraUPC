@@ -66,10 +66,8 @@ int main(int argc, char *argv[]) {
     // finalize
     free(colsPerProcess.data);
 
-    if (MYTHREAD == 0){
-        upc_all_free(matrixData.matrixValues);
-        freeSharedData();
-    }
+    upc_all_free(matrixData.matrixValues);
+    freeSharedData();
 
     return 0;
 }

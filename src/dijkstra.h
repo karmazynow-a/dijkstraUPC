@@ -8,8 +8,7 @@
 //  should be called by just one process
 void initData(int sourceVertex, int size);
 
-// clenup shared memory concerning algorithm
-//  should be called by just one process
+
 void freeSharedData();
 
 VertexData findVertexWithMinimalDistance(ColumnsToProcess cols);
