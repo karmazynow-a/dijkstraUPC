@@ -6,44 +6,43 @@
 #include "utility.h"
 
 
-typedef shared [] double * sdblptr;
 shared sdblptr columnData [THREADS];
 
-shared MatrixData matrixData;
+shared int matrixDimention;
 
 int main(int argc, char *argv[]) {
    
     // init
     upc_barrier;
 
-    // read matrix data
-    int sourceVertex;
+    // read matrix size to allocate memory
+    int sourceVertex = -1;
+    char * fileName = NULL;
     if (MYTHREAD == 0){
-        char * fileName = getInputFileName(argc, argv);
+        fileName = getInputFileName(argc, argv);
         sourceVertex = getSourceVertex(argc, argv);
-        matrixData = readDataAsContinuousMemory(fileName);
+        matrixDimention = readMatrixSize(fileName);
     }
 
     upc_barrier;
-    if (matrixData.matrixDimention == -1) return 0;
+    if (matrixDimention == -1) return 0;
 
     if (MYTHREAD == 0){
-        initData(sourceVertex, matrixData.matrixDimention);
+        initData(sourceVertex, matrixDimention);
         printf("\n");
     }
 
     upc_barrier;
 
     // divide columns per processes
-    // structure to hold data    
+    // local structure to hold data about processed columns
     ColumnsToProcess colsPerProcess;
 
     //  number of columns per process
-    colsPerProcess.numberOfColumns = matrixData.matrixDimention / THREADS;
-    colsPerProcess.columnSize = matrixData.matrixDimention;
+    colsPerProcess.numberOfColumns = matrixDimention / THREADS;
+    colsPerProcess.columnSize = matrixDimention;
 
-    // add columns that left
-    if ( matrixData.matrixDimention % THREADS > MYTHREAD) {
+    if ( matrixDimention % THREADS > MYTHREAD) {
         ++colsPerProcess.numberOfColumns;
     }
 
@@ -51,25 +50,21 @@ int main(int argc, char *argv[]) {
     columnData[MYTHREAD] = upc_alloc(colsPerProcess.numberOfColumns * 
             colsPerProcess.columnSize * sizeof(double) );
 
-    // save pointer to the beggining of column
+    upc_barrier;
+
+    // read matrix data to directory
+    if (MYTHREAD == 0){
+        readDataAsContinuousMemory(fileName, columnData);
+    }
+
+    upc_barrier;
+
+    // save pointers to the begginings of columns
     colsPerProcess.data = calloc(colsPerProcess.numberOfColumns, sizeof(ColumnData));
 
     for (int i = 0; i < colsPerProcess.numberOfColumns; ++i) {
         int columnIndex = MYTHREAD + i*THREADS;
 
-        // copy column from the matrix
-        // TODO it copies memory from affinity
-        /*
-        upc_memcpy(columnData[MYTHREAD] + i*colsPerProcess.columnSize,
-                   matrixData.matrixValues + columnIndex * colsPerProcess.columnSize, 
-                   colsPerProcess.columnSize * sizeof(double));
-        */
-        for(int j = 0; j < colsPerProcess.columnSize; ++j){
-            columnData[MYTHREAD][i*colsPerProcess.columnSize + j] = 
-                matrixData.matrixValues[columnIndex * colsPerProcess.columnSize + j];
-        }
-
-        // save data from column to structure
         colsPerProcess.data[i].columnIndex = columnIndex;
         colsPerProcess.data[i].column = columnData[MYTHREAD] + i*colsPerProcess.columnSize;  
     }
@@ -82,13 +77,12 @@ int main(int argc, char *argv[]) {
 
     // save results
     if (MYTHREAD == 0){
-        printResultToFile(matrixData.matrixDimention, sourceVertex);
+        printResultToFile(matrixDimention, sourceVertex);
     }
 
     // finalize
     free(colsPerProcess.data);
     upc_all_free(columnData[MYTHREAD]);
-    upc_all_free(matrixData.matrixValues);
     freeSharedData();
 
     return 0;

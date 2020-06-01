@@ -4,14 +4,12 @@
 
 #include "utility.h"
 
-MatrixData readDataAsContinuousMemory(const char * fileName){
+int readMatrixSize(const char * fileName){
     FILE * fp = fopen(fileName, "r");
-
-    MatrixData m  = {-1, NULL};
 
     if (fp == NULL) {
         printf("Brak pliku %s !\n", fileName);
-        return m;
+        return -1;
     }
 
     int matrixSize = -1;
@@ -19,25 +17,36 @@ MatrixData readDataAsContinuousMemory(const char * fileName){
 
     printf("Rozmiar macierzy = %d\n", matrixSize);
 
-    m.matrixDimention = matrixSize;
-    m.matrixValues = upc_global_alloc(matrixSize, matrixSize * sizeof(double));
-
-    shared double * matrixPtr = m.matrixValues;
-    for (int i = 0; i < matrixSize*matrixSize; ++i) {
-        // read by columns
-        int idx = i/matrixSize + matrixSize*(i%matrixSize);
-        char tmp[250];
-        fscanf(fp, "%s ", tmp);
-        matrixPtr[idx] = atof(tmp);
-    }
-
     fclose(fp);
 
-    return m;
+    return matrixSize;
 }
 
 
-char * getInputFileName(int argc, char *argv[]) {
+void readDataAsContinuousMemory(const char * fileName, shared sdblptr columnData [THREADS]){
+    FILE * fp = fopen(fileName, "r");
+
+    if (fp == NULL) {
+        printf("Brak pliku %s !\n", fileName);
+        return;
+    }
+
+    int matrixSize = -1;
+    fscanf(fp, "%d\n", &matrixSize);
+
+    shared sdblptr * dirPtr = columnData;
+    for (int i = 0; i < matrixSize; ++i){
+        for (int j = 0; j < matrixSize; ++j){
+            char tmp[10];
+            fscanf(fp, "%s ", tmp);
+            dirPtr[j%THREADS][i + (j/THREADS) * matrixSize] = atof(tmp);
+        }
+    }
+
+    fclose(fp);
+}
+
+char * getInputFileName(const int argc, char *argv[]) {
     if (argc < 3) {
         puts("Nie podano pliku - domyślny");
         return "data/graph.dat";
@@ -46,7 +55,7 @@ char * getInputFileName(int argc, char *argv[]) {
 }
 
 
-int getSourceVertex(int argc, char *argv[]) {
+int getSourceVertex(const int argc, char *argv[]) {
     if (argc < 2) {
         puts("Nie podano wierzchołka - domyślny");
         return 0;
