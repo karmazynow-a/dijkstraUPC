@@ -20,14 +20,12 @@ MatrixData readDataAsContinuousMemory(const char * fileName){
     printf("Rozmiar macierzy = %d\n", matrixSize);
 
     m.matrixDimention = matrixSize;
-    m.matrixValues = upc_global_alloc(matrixSize * matrixSize, sizeof(double));
+    m.matrixValues = upc_global_alloc(matrixSize, matrixSize * sizeof(double));
 
-    // scan by rows
     shared double * matrixPtr = m.matrixValues;
     for (int i = 0; i < matrixSize*matrixSize; ++i) {
-        // save by columns not by rows
+        // read by columns
         int idx = i/matrixSize + matrixSize*(i%matrixSize);
-        
         char tmp[250];
         fscanf(fp, "%s ", tmp);
         matrixPtr[idx] = atof(tmp);
@@ -38,6 +36,7 @@ MatrixData readDataAsContinuousMemory(const char * fileName){
     return m;
 }
 
+
 char * getInputFileName(int argc, char *argv[]) {
     if (argc < 3) {
         puts("Nie podano pliku - domyślny");
@@ -45,6 +44,7 @@ char * getInputFileName(int argc, char *argv[]) {
     }
     return argv[2];
 }
+
 
 int getSourceVertex(int argc, char *argv[]) {
     if (argc < 2) {
@@ -55,15 +55,16 @@ int getSourceVertex(int argc, char *argv[]) {
     return atoi(argv[1]);
 }   
 
-void printColumn( ColumnsToProcess col, int columnIndex ){
+
+void printColumn( const ColumnsToProcess * col, const int columnIndex ){
     char str [250];
     sprintf(str, "Poszukiwanie kolumny %d", columnIndex);
 
-    for (int i = 0; i < col.numberOfColumns; ++i){
-        if (col.data[i].index == columnIndex ) {
+    for (int i = 0; i < col->numberOfColumns; ++i){
+        if (col->data[i].columnIndex == columnIndex ) {
 
-            for (int j = 0; j < col.columnSize; ++j){
-                sprintf(str, "%s \n %f", str, col.data[i].begin[j]);
+            for (int j = 0; j < col->columnSize; ++j){
+                sprintf(str, "%s \n %f", str, col->data[i].column[j]);
             }
 
             puts(str);
@@ -72,5 +73,16 @@ void printColumn( ColumnsToProcess col, int columnIndex ){
     }
 
     strcat(str, "\n  Nie znaleziono!");
+    puts(str);
+}
+
+
+void printColumnInfo( const ColumnsToProcess * col ){
+    char str [250];
+    sprintf(str, "Proces %d posiada %d kolumn o indeksach: ", MYTHREAD, col->numberOfColumns);
+    for (int i = 0; i < col->numberOfColumns; ++i){
+        sprintf(str, "%s %d, ", str, col->data[i].columnIndex);
+    }
+
     puts(str);
 }

@@ -3,6 +3,7 @@
 // data concerning signle vetex
 
 typedef struct vertexData {
-   int index;
-   double distance;
+    // index of vertex in graph
+    int index;
+    double distance;
 } VertexData;

@@ -5,11 +5,10 @@
 // data concerning single column
 typedef struct columnData {
     // index in global matrix
-    int index;
+    int columnIndex;
 
     // pointer to the beginning of column in matrix
-    //TODO change to local
-    shared double * begin;
+    shared [] double * column;
 } ColumnData;
 
 // columns for each process
@@ -23,3 +22,6 @@ typedef struct colsToProcess {
     // list of beginnings of columns in matrix
     ColumnData * data;
 } ColumnsToProcess;
+
+// get matrix value from column
+double getValueFromColumn ( const ColumnData * col, const int rowIndex, const int rowSize );

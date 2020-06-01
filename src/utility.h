@@ -12,4 +12,7 @@ char * getInputFileName(int argc, char *argv[]);
 int getSourceVertex(int argc, char *argv[]);
 
 // print column by index
-void printColumn( ColumnsToProcess col, int columnIndex );
+void printColumn( const ColumnsToProcess * col, const int columnIndex );
+
+// print column data assignment
+void printColumnInfo( const ColumnsToProcess * col );

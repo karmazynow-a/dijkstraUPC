@@ -5,7 +5,8 @@ ALG_NAME = DijkstraUPC
 ALG_OBJ = \
 	main.o \
 	dijkstra.o \
-	utility.o
+	utility.o \
+	columnsToProcess.o
 
 %.o: %.c
 	$(UPCC) -c -o $@ $< -I.

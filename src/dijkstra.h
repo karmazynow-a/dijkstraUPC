@@ -6,27 +6,26 @@
 
 // allocates memory and fill the arrays
 //  should be called by just one process
-void initData(int sourceVertex, int size);
-
+void initData(const int sourceVertex, const int size);
 
 void freeSharedData();
 
-VertexData findVertexWithMinimalDistance(ColumnsToProcess cols);
+VertexData findVertexWithMinimalDistance(const ColumnsToProcess cols);
 
-int checkIfAllVerticesHaveBeenProcessed(int numberOfColumns);
+int checkIfAllVerticesHaveBeenProcessed(const int numberOfColumns);
 
 // run the algorithm
-void run(ColumnsToProcess cols);
+void run(const ColumnsToProcess cols);
 
 // find new distances
-void performInnerLoop(VertexData closestVertex, ColumnsToProcess cols);
+void performInnerLoop(const VertexData closestVertex, const ColumnsToProcess cols);
 
 // debug printout
 void printState();
 
 // save results to file
-void printResultToFile(int numberOfColumns, int sourceVertex);
+void printResultToFile(const int numberOfColumns, const int sourceVertex);
 
-void printPaths(FILE * fp, int numberOfColumns, int sourceVertex);
+void printPaths(FILE * fp, const int numberOfColumns, const int sourceVertex);
 
-void printDistances(FILE * fp, int numberOfColumns, int sourceVertex);
+void printDistances(FILE * fp, const int numberOfColumns, const int sourceVertex);

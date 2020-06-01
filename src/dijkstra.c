@@ -17,7 +17,7 @@ shared int numberOfProcessedColumns;
 shared double * shared localMin;
 
 
-void initData ( int sourceVertex, int size ){
+void initData ( const int sourceVertex, const int size ){
     processedColumns = upc_global_alloc( size, sizeof(int));
     distances = upc_global_alloc( size, sizeof(double));
     predecessors = upc_global_alloc( size, sizeof(int));
@@ -47,12 +47,6 @@ void run (ColumnsToProcess cols){
    while( !checkIfAllVerticesHaveBeenProcessed(cols.columnSize) ){
 
       upc_notify;
-
-      // all local minimums should be set to INFINITY, in any other case
-      // the algorithm could use previous value
-      upc_forall(int i = 0; i < cols.columnSize; ++i; &localMin[i]) {
-          localMin[i] = INFINITY;
-      }
 
       // reset global minimum value
       if (MYTHREAD == 0) {
@@ -89,6 +83,9 @@ void run (ColumnsToProcess cols){
       upc_notify;
       if (MYTHREAD == 0){  
         processedColumns[globalMin.index] = 1;
+
+        // reset chosen local minimum value
+        localMin[globalMin.index ] = INFINITY;
       }
       upc_wait;
 
@@ -106,7 +103,7 @@ void run (ColumnsToProcess cols){
 }
 
 
-int checkIfAllVerticesHaveBeenProcessed(int numberOfColumns) {
+int checkIfAllVerticesHaveBeenProcessed(const int numberOfColumns) {
     upc_barrier;
     upc_all_reduceI(&numberOfProcessedColumns, processedColumns, UPC_ADD, numberOfColumns, 1, NULL, UPC_IN_ALLSYNC);
     upc_barrier;
@@ -114,7 +111,7 @@ int checkIfAllVerticesHaveBeenProcessed(int numberOfColumns) {
 }
 
 
-VertexData findVertexWithMinimalDistance(ColumnsToProcess cols){
+VertexData findVertexWithMinimalDistance(const ColumnsToProcess cols){
     
     VertexData closestVertex = { -1, INFINITY };
 
@@ -135,35 +132,31 @@ VertexData findVertexWithMinimalDistance(ColumnsToProcess cols){
 }
 
 
-void performInnerLoop(VertexData closestVertex, ColumnsToProcess cols){
+void performInnerLoop(const VertexData closestVertex, const ColumnsToProcess cols){
     //  distance between columns for one process
     int columnsDist = THREADS;
 
         for (int i = 0; i < cols.numberOfColumns; ++i) {
-            int currentIndex = cols.data[i].index;
-
-            if( processedColumns[currentIndex] == 1){
-               continue;
-            }
             
-            double valueInMatrix = cols.data[i].begin[closestVertex.index];
+            int currentColumnIndex = cols.data[i].columnIndex;
+
+            double valueInMatrix = getValueFromColumn(cols.data + i, closestVertex.index, cols.columnSize );
 
             valueInMatrix = valueInMatrix < 0.001
                 ? INFINITY
                 : valueInMatrix;
 
             double newDistance = valueInMatrix + closestVertex.distance;
-            
-            if( newDistance < distances[currentIndex] ) {
-               distances[currentIndex] = newDistance;
-               predecessors[currentIndex] = closestVertex.index;
-
+           
+            if( newDistance < distances[currentColumnIndex] ) {
+               distances[currentColumnIndex] = newDistance;
+               predecessors[currentColumnIndex] = closestVertex.index;
             }
         }
 }
 
 
-void printState( int numberOfColumns ){
+void printState( const int numberOfColumns ){
     char str[1024] = "";
 
     for (int i = 0; i < numberOfColumns; ++i){
@@ -175,7 +168,7 @@ void printState( int numberOfColumns ){
 }
 
 
-void printResultToFile(int numberOfColumns, int sourceVertex){
+void printResultToFile( const int numberOfColumns, const int sourceVertex ){
     FILE * fp = fopen("resultsUPC.txt", "w");
 
     printDistances( fp, numberOfColumns, sourceVertex );
@@ -185,7 +178,7 @@ void printResultToFile(int numberOfColumns, int sourceVertex){
 }
 
 
-void printPaths( FILE * fp, int numberOfColumns, int sourceVertex ){
+void printPaths( FILE * fp, const int numberOfColumns, const int sourceVertex ){
     fprintf(fp, "============= PATHS =============\n");
 
     for (int i = 0; i < numberOfColumns; ++i){
@@ -207,7 +200,7 @@ void printPaths( FILE * fp, int numberOfColumns, int sourceVertex ){
 }
 
 
-void printDistances( FILE * fp, int numberOfColumns, int sourceVertex ){
+void printDistances( FILE * fp, const int numberOfColumns, const int sourceVertex ){
     fprintf(fp, "============ RESULTS ============\n");
 
     for (int i = 0; i < numberOfColumns; ++i){
@@ -215,4 +208,3 @@ void printDistances( FILE * fp, int numberOfColumns, int sourceVertex ){
             sourceVertex, i, distances[i]);
     }
 }
-
