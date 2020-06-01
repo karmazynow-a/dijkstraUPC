@@ -1,0 +1,118 @@
+
+%----------------------------------------------------------------------------------------
+%	PREAMBUŁA
+%----------------------------------------------------------------------------------------
+
+\documentclass[12pt]{article}
+\usepackage[polish]{babel}
+\usepackage{polski}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{fancyhdr}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage[hidelinks]{hyperref}
+\usepackage{verbatim}
+\usepackage{amsmath}
+\usepackage{rotating}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{subcaption}
+
+\definecolor{lgray}{gray}{0.96}
+\definecolor{lbcolor}{rgb}{0.9,0.9,0.9}
+\lstset{
+    framesep=2pt,
+    breaklines=true,
+    breakatwhitespace=true,
+    basicstyle=\footnotesize,
+    aboveskip={0.75\baselineskip},
+    columns=flexible,
+    showstringspaces=false,
+    breaklines=true,
+    prebreak = \raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
+    frame=single,
+    rulecolor=\color{lgray},
+    showtabs=false,
+    showspaces=false,
+    showstringspaces=false,
+    backgroundcolor=\color{lgray},
+    identifierstyle=\ttfamily,
+    keywordstyle=\color[rgb]{0,0,1},
+    commentstyle=\color[rgb]{0.0,0.26,0.15},
+    stringstyle=\color[rgb]{0.627,0.126,0.941}
+}
+
+\graphicspath{{static/}} 
+
+\title{Algorytm Dijkstry}
+\author{Arkadiusz Kasprzak, Aleksandra Poręba}
+
+\makeatletter
+\let\thetitle\@title
+\let\theauthor\@author
+\let\thedate\@date
+\makeatother
+
+%----------------------------------------------------------------------------------------
+%	STRONA TYTUŁOWA
+%----------------------------------------------------------------------------------------
+\begin{document}
+\begin{center}
+\textsc{\normalsize Wydział Fizyki i Informatyki Stosowanej}\\[2.0cm] 
+\includegraphics[scale = 1]{logo.pdf}\\[1cm] 
+\textsc{\Large Systemy równoległe i rozproszone}\\[0.4cm] 
+
+
+{ \huge \bfseries \LARGE{Drzewa wszystkich najkrótszych ścieżek - algorytm Dijkstry} }\\[0.2cm] 
+{ \huge \bfseries \LARGE{Aplikacja PGAS} }\\[1cm] 
+
+\flushright \Large Arkadiusz Kasprzak \\ Aleksandra Poręba
+
+\vfill 
+
+\center {\today}\\[2cm] 
+
+
+\pagebreak 
+
+\end{center}
+
+%----------------------------------------------------------------------------------------
+%	SPIS TREŚCI
+%----------------------------------------------------------------------------------------
+\setcounter{tocdepth}{2}
+\tableofcontents
+\pagebreak
+
+%----------------------------------------------------------------------------------------
+%	ZAWARTOŚĆ
+%----------------------------------------------------------------------------------------
+
+\pagestyle{fancy}
+\fancyhf{}
+
+\rhead{\theauthor}
+\lhead{\thetitle}
+\cfoot{\thepage}
+
+\section{Wstęp}
+
+
+\clearpage
+\section{Obsługa programu}
+Niniejsza część dokumentacji przedstawia informacje związane z kompilacją i uruchomieniem projektu.
+
+\subsection{Obsługa projektu na pracowni WFiIS}
+
+\subsection{Dane wejściowe}
+
+\subsection{Format pliku wynikowego}
+
+
+\newpage
+\begin{thebibliography}{9}
+
+\end{thebibliography}
+
+\end{document}
