@@ -13,7 +13,9 @@ shared double * shared distances;
 shared int * shared predecessors;
 
 shared VertexData globalMin;
+shared int numberOfProcessedColumns;
 shared double * shared localMin;
+
 
 void initData ( int sourceVertex, int size ){
     processedColumns = upc_global_alloc( size, sizeof(int));
@@ -31,45 +33,46 @@ void initData ( int sourceVertex, int size ){
     distances[sourceVertex] = 0;
 }
 
+
 void freeSharedData (){
-        upc_all_free(processedColumns);
-        upc_all_free(predecessors);
-        upc_all_free(distances);
-        upc_all_free(localMin);
+    upc_all_free(processedColumns);
+    upc_all_free(predecessors);
+    upc_all_free(distances);
+    upc_all_free(localMin);
 }
+
 
 void run (ColumnsToProcess cols){
 
    while( !checkIfAllVerticesHaveBeenProcessed(cols.columnSize) ){
 
       upc_notify;
-      // reset minimum values
-      if (MYTHREAD == 0) {
-        // all local minimums should be inf, in other case
-        //    algorithm can take previous minimum that got smaller value
-        for (int i = 0; i < cols.columnSize; ++i){
-            localMin[i] = INFINITY;
-        }
 
-        globalMin.index = -1;
-        globalMin.distance = INFINITY;
-
+      // all local minimums should be set to INFINITY, in any other case
+      // the algorithm could use previous value
+      upc_forall(int i = 0; i < cols.columnSize; ++i; &localMin[i]) {
+          localMin[i] = INFINITY;
       }
+
+      // reset global minimum value
+      if (MYTHREAD == 0) {
+          globalMin.index = -1;
+          globalMin.distance = INFINITY;
+      }
+
       upc_wait;
 
       VertexData local = findVertexWithMinimalDistance(cols);
       localMin[local.index] = local.distance;
 
       upc_barrier;
-
       upc_all_reduceD(&globalMin.distance, localMin, UPC_MIN, cols.columnSize, 1, NULL, UPC_IN_ALLSYNC);
-
       upc_barrier;
 
       // find index of global value
       if (MYTHREAD == 0){
         for(int i = 0; i < cols.columnSize; ++i){
-            if( localMin[i] - globalMin.distance < 0.001){
+            if( fabs(localMin[i] - globalMin.distance) < 0.001){
                 globalMin.index = i;
                 break;
             }
@@ -87,7 +90,7 @@ void run (ColumnsToProcess cols){
       if (MYTHREAD == 0){  
         processedColumns[globalMin.index] = 1;
       }
-      upc_wait;   
+      upc_wait;
 
       // calculate new distances
       upc_notify;
@@ -95,42 +98,42 @@ void run (ColumnsToProcess cols){
       upc_wait;
    }
 
-   // TODO to be deleted before release
-   if(MYTHREAD == 0){
+    // TODO to be deleted before release
+    if(MYTHREAD == 0){
         puts("\n\nFINAL STATE");
         printState(cols.columnSize);
-   }
+    }
 }
+
 
 int checkIfAllVerticesHaveBeenProcessed(int numberOfColumns) {
-   // FIXME: find more efficient way
-   for (int i = 0;  i < numberOfColumns; ++i){
-      if( processedColumns[i] == 0)
-         return false;
-   }
-   return true;
+    upc_barrier;
+    upc_all_reduceI(&numberOfProcessedColumns, processedColumns, UPC_ADD, numberOfColumns, 1, NULL, UPC_IN_ALLSYNC);
+    upc_barrier;
+    return numberOfProcessedColumns == numberOfColumns;
 }
+
 
 VertexData findVertexWithMinimalDistance(ColumnsToProcess cols){
-    VertexData closestVertex = {-1, INFINITY};
+    
+    VertexData closestVertex = { -1, INFINITY };
 
-    // for each column that is processed
-    for (int i = 0; i < cols.numberOfColumns; ++i){
-        int columnIndex = cols.data[i].index;
-        
+    // for each processed column
+    upc_forall(int i = 0; i < cols.columnSize; ++i; &processedColumns[i] ) {
+
         // we check if it was already calculated
-        if( processedColumns[columnIndex] == 0 ) {
+        if (processedColumns[i] == 0) {
 
             // if not, we look for closest vertex to it
-                if ( distances[columnIndex] < closestVertex.distance ) {
-                    closestVertex.index = columnIndex;
-                    closestVertex.distance = distances[columnIndex];
-                }
+            if ( distances[i] < closestVertex.distance ) {
+                closestVertex.index = i;
+                closestVertex.distance = distances[i];
+            }
         }
     }
-
     return closestVertex;
 }
+
 
 void performInnerLoop(VertexData closestVertex, ColumnsToProcess cols){
     //  distance between columns for one process
@@ -159,6 +162,7 @@ void performInnerLoop(VertexData closestVertex, ColumnsToProcess cols){
         }
 }
 
+
 void printState( int numberOfColumns ){
     char str[1024] = "";
 
@@ -170,6 +174,7 @@ void printState( int numberOfColumns ){
     puts(str);
 }
 
+
 void printResultToFile(int numberOfColumns, int sourceVertex){
     FILE * fp = fopen("resultsUPC.txt", "w");
 
@@ -178,6 +183,7 @@ void printResultToFile(int numberOfColumns, int sourceVertex){
 
     fclose(fp);
 }
+
 
 void printPaths( FILE * fp, int numberOfColumns, int sourceVertex ){
     fprintf(fp, "============= PATHS =============\n");
@@ -199,6 +205,7 @@ void printPaths( FILE * fp, int numberOfColumns, int sourceVertex ){
         fprintf(fp, "%s\n", path);
     }
 }
+
 
 void printDistances( FILE * fp, int numberOfColumns, int sourceVertex ){
     fprintf(fp, "============ RESULTS ============\n");

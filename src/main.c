@@ -46,7 +46,7 @@ int main(int argc, char *argv[]) {
 
     for (int i = 0; i < colsPerProcess.numberOfColumns; ++i) {
         int columnIndex = MYTHREAD + i*THREADS;
-        colsPerProcess.data[i].index = columnIndex ;
+        colsPerProcess.data[i].index = columnIndex;
         colsPerProcess.data[i].begin = matrixData.matrixValues 
                 + columnIndex*matrixData.matrixDimention;  
 
