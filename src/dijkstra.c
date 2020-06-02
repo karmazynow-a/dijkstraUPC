@@ -181,9 +181,12 @@ void printResultToFile( const int numberOfColumns, const int sourceVertex ){
 void printPaths( FILE * fp, const int numberOfColumns, const int sourceVertex ){
     fprintf(fp, "============= PATHS =============\n");
 
+    char placeholderVertex [100] = "";
+    sprintf(placeholderVertex, "%d\0", -1);
+
     for (int i = 0; i < numberOfColumns; ++i){
         char path [100] = "";
-        char buff [100];
+        char buff [100] = "";
         int vertex = i;
 
         while (vertex != sourceVertex && vertex >= 0) {
@@ -195,7 +198,14 @@ void printPaths( FILE * fp, const int numberOfColumns, const int sourceVertex ){
         strcpy(buff, path);
         sprintf(path, "%d, %s", vertex, buff);
 
-        fprintf(fp, "%s\n", path);
+        if (strstr(path, placeholderVertex) == NULL) {
+            fprintf(fp, "%s\n", path);
+        }
+        else {
+            fprintf(fp, "Vertex %d unreachable from source vertex.\n", i);
+        }
+
+        
     }
 }
 

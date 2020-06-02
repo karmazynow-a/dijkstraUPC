@@ -1,0 +1,16 @@
+============ RESULTS ============
+Distance from vertex 5 to 0: inf 
+Distance from vertex 5 to 1: inf 
+Distance from vertex 5 to 2: inf 
+Distance from vertex 5 to 3: inf 
+Distance from vertex 5 to 4: inf 
+Distance from vertex 5 to 5: 0.00 
+Distance from vertex 5 to 6: 10.00 
+============= PATHS =============
+Vertex 0 unreachable from source vertex.
+Vertex 1 unreachable from source vertex.
+Vertex 2 unreachable from source vertex.
+Vertex 3 unreachable from source vertex.
+Vertex 4 unreachable from source vertex.
+5, 
+5, 6, 
