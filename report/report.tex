@@ -97,21 +97,94 @@
 \cfoot{\thepage}
 
 \section{Wstęp}
+Niniejszy dokument stanowi dokumentację drugiego projektu wykonanego w ramach przedmiotu \textit{Systemy równoległe i rozproszone}. Jego tematem było stworzenie, z wykorzystaniem technologii \textit{Unified Parallel C}, aplikacji implementującej algorytm Dijkstry.
 
+
+\subsection{Algorytm Dijkstry}
+Zaimplementowany w ramach projektu algorytm Dijkstry jest algorytmem poszukiwania najkrótszych ścieżek z wybranego wierzchołka do wszystkich pozostałych w grafie (skierowanym lub nieskierowanym) o nieujemnych wagach krawędzi. Algorytm ten oparty jest na metodzie zachłannej: w każdym kroku wybierany jest wierzchołek, do którego dotarcie wiąże się z najmniejszym kosztem.
+
+\textbf{tutaj mozna jeszcze cos dopisac i ewentualnie pseudokod}
+
+
+\subsection{Zastosowane technologie}
+Przygotowana aplikacja napisana została w języku programowania C, z wykorzystaniem technologii UPC (\textit{Unified Parallel C}). 
+
+\textbf{tutaj jakies szczegoly dopisac}
+
+
+\clearpage
+\section{Struktura projektu}
+
+\clearpage
+\section{Działanie projektu}
 
 \clearpage
 \section{Obsługa programu}
 Niniejsza część dokumentacji przedstawia informacje związane z kompilacją i uruchomieniem projektu.
 
 \subsection{Obsługa projektu na pracowni WFiIS}
+W celu ułatwienia kompilacji i uruchomienia projektu na pracowni Wydziału Fizyki i Informatyki Stosowanej przygotowane zostały dedykowane pliki \lstinline{Makefile} oraz skrypty do obsługi programu. Znajdują się one w katalogu \lstinline{build_uni}. Aby dokonać koniecznej konfiguracji środowiska oraz, następnie, kompilacji programu należy wykonać następujące polecenia:
+\begin{lstlisting}
+cd build_uni
+source setup.sh
+make
+\end{lstlisting}
+Plik \lstinline{setup.sh} pozwala na skonfigurowanie zmiennych środowiskowych oraz produkuje plik \lstinline{nodes}. Następnie, aby uruchomić program należy użyć polecenia:
+\begin{lstlisting}
+make run VERTEX=V FILE=F PROC_COUNT=P HOSTS=H
+\end{lstlisting}
+gdzie \lstinline{V} oznacza wierzchołek startowy (domyślnie: 0), \lstinline{F} to ścieżka do pliku z danymi (domyślnie: \lstinline{../data/graph.dat}), \lstinline{P} to liczba procesów, które zostaną użyte do wykonania algorytmu (domyślnie: 1) a \lstinline{H} to ścieżka do pliku z węzłami (domyślnie: \lstinline{nodes}). Inne opcje udostępnione przez plik \lstinline{Makefile} to:
+\begin{itemize}
+\item \lstinline{make build} - wykonanie procesu kompilacji - tożsame z poleceniem \lstinline{make} bez argumentów
+\item \lstinline{make run} - uruchomienie programu z domyślnymi opcjami
+\item \lstinline{make clean} - przywraca projekt do stanu początkowego
+\item \lstinline{make docs} - tworzy dokumentację za pomocą narzędzia Doxygen
+\item \lstinline{make install} - kopiuje plik wykonywalny do aktualnego katalogu
+\end{itemize}
+Wynik działania programu zapisywany jest do pliku \lstinline{resultsUPC.txt}.
 
 \subsection{Dane wejściowe}
+Program jako jedną z danych wejściowych przyjmuje ścieżkę do pliku z grafem zapisanym w postaci macierzy sąsiedztwa. W pierwszej linii pliku powinna znajdować się liczba wierzchołków kodowanego grafu. Kolejne linie powinny odpowiadać wierszom macierzy sąsiedztwa. Wagi powinny być zapisane w formie dodatnich liczb rzeczywistych.
+
+\begin{lstlisting}[caption={Przykładowy plik wejściowy.}]
+7
+0.0000 5.0000 0.0000 0.0000 0.0000 0.0000 0.0000
+0.0000 0.0000 7.0000 0.0000 0.0000 0.0000 0.0000
+0.0000 0.0000 0.0000 1.0000 0.0000 0.0000 0.0000
+0.0000 4.0000 0.0000 0.0000 0.0000 0.0000 0.0000
+0.0000 0.0000 2.0000 0.0000 0.0000 0.0000 0.0000
+0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 10.0000
+0.0000 0.0000 0.0000 0.0000 0.0000 2.0000 0.0000
+\end{lstlisting}
+
 
 \subsection{Format pliku wynikowego}
+Wyniki wygenerowane przez program zapisywane są do pliku tekstowego o nazwie \lstinline{resultsUPC.txt}. Wyprodukowany plik ma następujący format:
+
 
 
 \newpage
 \begin{thebibliography}{9}
+
+\bibitem{gronek}
+dr inż. Piotr Gronek - wykład z przedmiotu \textit{Systemy równoległe i rozproszone} prowadzony na Wydziale Fizyki i Informatyki Stosowanej AGH
+
+\bibitem{gramagupta}
+Ananth Grama, Anshul Gupta, George Karypis, Vipin Kumar 
+\textit{Introduction to Parallel Computing, Second Edition}. 
+Addison-Wesley, 2003.
+
+\bibitem{elghazawi}
+Tarek El-Ghazawi, William Carlson, Thomas Sterling, Katherine Yelick 
+\textit{UPC: Distributed Shared Memory Programming}
+
+\bibitem{berkeley}
+Dokumentacja projektu \textit{Berkeley UPC} - \url{https://upc.lbl.gov/docs/} (dostęp: 01.06.2020)
+
+\bibitem{spec}
+UPC Consortium - \textit{UPC Required Library Specifications Version 1.3}
+
+
 
 \end{thebibliography}
 
