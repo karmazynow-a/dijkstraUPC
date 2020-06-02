@@ -1,6 +1,6 @@
 
 #include "columnsToProcess.h"
 
-double getValueFromColumn ( const ColumnData * col, const int rowIndex, const int rowSize ){
-    return *(col->column + rowIndex);
+double getValueFromColumn ( const ColumnData * column, const int rowIndex ){
+    return *(column->column + rowIndex);
 }

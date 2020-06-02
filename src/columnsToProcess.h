@@ -1,27 +1,59 @@
+/**
+*	@file columnsToProcess.h
+*	@brief This file contains helper structures manage processed columns.
+*/
+
 #pragma once
 
-// helper structures for processing the columns
-
-// data concerning single column
+/// <summary>
+/// This structure contains data concerning single column.
+/// </summary>
 typedef struct columnData {
-    // index in global matrix
+    /// <summary>
+    /// Index of the column in original adjacency matrix. Its value is the same as
+    /// the index of vertex in the graph.
+    /// </summary>
     int columnIndex;
 
-    // pointer to the beginning of column in matrix
+    /// <summary>
+    /// Pointer to the beggining of column in shared directory.
+    /// </summary>
     shared [] double * column;
 } ColumnData;
 
-// columns for each process
+
+/// <summary>
+/// The structure that holds all columns processed by the process.
+/// </summary>
 typedef struct colsToProcess {
-    // number of columns to process by process
+    /// <summary>
+    /// The amount of processed columns.
+    /// </summary>
     int numberOfColumns;
 
-    // size of single column - is equal to number of columns
+    /// <summary>
+    /// The size of a single column.
+    /// </summary>
     int columnSize;
 
-    // list of beginnings of columns in matrix
+    /// <summary>
+    /// The list of columns that will be processed.
+    /// </summary>
     ColumnData * data;
 } ColumnsToProcess;
 
-// get matrix value from column
-double getValueFromColumn ( const ColumnData * col, const int rowIndex, const int rowSize );
+/// <summary>
+/// Helper function to retrieve distance in column for given vertex.
+/// </summary>
+/// <returns>
+/// Distance in given column to given vertex.
+/// </returns>
+/// <param name="column">
+/// Pointer to column wrapped in ColumnData structure from which the distance 
+/// will be retrieved.
+/// </param>
+/// <param name="rowIndex">
+/// Integer number representing the index of the vertex to which the distance 
+/// will be found.
+/// </param>
+double getValueFromColumn ( const ColumnData * column, const int rowIndex );

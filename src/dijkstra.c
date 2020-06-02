@@ -140,7 +140,7 @@ void performInnerLoop(const VertexData closestVertex, const ColumnsToProcess col
             
             int currentColumnIndex = cols.data[i].columnIndex;
 
-            double valueInMatrix = getValueFromColumn(cols.data + i, closestVertex.index, cols.columnSize );
+            double valueInMatrix = getValueFromColumn(cols.data + i, closestVertex.index );
 
             valueInMatrix = valueInMatrix < 0.001
                 ? INFINITY

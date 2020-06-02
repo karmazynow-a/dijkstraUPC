@@ -65,15 +65,15 @@ int getSourceVertex(const int argc, char *argv[]) {
 }   
 
 
-void printColumn( const ColumnsToProcess * col, const int columnIndex ){
+void printColumn( const ColumnsToProcess * cols, const int columnIndex ){
     char str [250];
     sprintf(str, "Poszukiwanie kolumny %d", columnIndex);
 
-    for (int i = 0; i < col->numberOfColumns; ++i){
-        if (col->data[i].columnIndex == columnIndex ) {
+    for (int i = 0; i < cols->numberOfColumns; ++i){
+        if (cols->data[i].columnIndex == columnIndex ) {
 
-            for (int j = 0; j < col->columnSize; ++j){
-                sprintf(str, "%s \n %f", str, col->data[i].column[j]);
+            for (int j = 0; j < cols->columnSize; ++j){
+                sprintf(str, "%s \n %f", str, cols->data[i].column[j]);
             }
 
             puts(str);
@@ -86,11 +86,11 @@ void printColumn( const ColumnsToProcess * col, const int columnIndex ){
 }
 
 
-void printColumnInfo( const ColumnsToProcess * col ){
+void printColumnInfo( const ColumnsToProcess * cols ){
     char str [250];
-    sprintf(str, "Proces %d posiada %d kolumn o indeksach: ", MYTHREAD, col->numberOfColumns);
-    for (int i = 0; i < col->numberOfColumns; ++i){
-        sprintf(str, "%s %d, ", str, col->data[i].columnIndex);
+    sprintf(str, "Proces %d posiada %d kolumn o indeksach: ", MYTHREAD, cols->numberOfColumns);
+    for (int i = 0; i < cols->numberOfColumns; ++i){
+        sprintf(str, "%s %d, ", str, cols->data[i].columnIndex);
     }
 
     puts(str);
