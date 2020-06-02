@@ -160,10 +160,26 @@ Program jako jedną z danych wejściowych przyjmuje ścieżkę do pliku z grafem
 
 \subsection{Format pliku wynikowego}
 Wyniki wygenerowane przez program zapisywane są do pliku tekstowego o nazwie \lstinline{resultsUPC.txt}. Wyprodukowany plik ma następujący format:
+\begin{lstlisting}[caption={Przykładowy plik z wynikami}]
+============ RESULTS ============
+Distance from vertex 0 to 0: 0.00 
+Distance from vertex 0 to 1: 5.00 
+Distance from vertex 0 to 2: 12.00 
+Distance from vertex 0 to 3: 13.00 
+Distance from vertex 0 to 4: inf 
+Distance from vertex 0 to 5: inf 
+Distance from vertex 0 to 6: inf 
+============= PATHS =============
+0, 
+0, 1, 
+0, 1, 2, 
+0, 1, 2, 3, 
+Vertex 4 unreachable from source vertex.
+Vertex 5 unreachable from source vertex.
+Vertex 6 unreachable from source vertex.
+\end{lstlisting}
+W pierwszej części pliku znajdują się wyliczone koszty dotarcia z wierzchołka źródłowego do pozostałych wierzchołków w grafie. Jeśli dotarcie nie było możliwe, zapisywana jest wartość \lstinline{inf}. W drugiej części pliku znajdują się wyliczone ścieżki - ponownie, jeśli wierzchołek był nieosiągalny, jest to odnotowywane.
 
-
-
-\newpage
 \begin{thebibliography}{9}
 
 \bibitem{gronek}
