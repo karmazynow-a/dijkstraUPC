@@ -42,6 +42,7 @@ typedef struct colsToProcess {
     ColumnData * data;
 } ColumnsToProcess;
 
+
 /// <summary>
 /// Helper function to retrieve distance in column for given vertex.
 /// </summary>
@@ -53,7 +54,6 @@ typedef struct colsToProcess {
 /// will be retrieved.
 /// </param>
 /// <param name="rowIndex">
-/// Integer number representing the index of the vertex to which the distance 
-/// will be found.
+/// Index of the vertex to which the distance will be found.
 /// </param>
 double getValueFromColumn ( const ColumnData * column, const int rowIndex );

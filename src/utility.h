@@ -18,7 +18,7 @@ typedef shared [] double * sdblptr;
 /// If file does not exist it returns -1.
 /// </summary>
 /// <returns>
-/// Matrix dimention
+/// Matrix dimention.
 /// </returns>
 /// <param name="fileName">
 /// Name of input file.
@@ -36,7 +36,7 @@ int readMatrixSize(const char * fileName);
 /// </param>
 /// <param name="columnData">
 /// Memory dictionary, that helds data for corresponding threads. Memory should 
-/// be allocated.
+/// already be allocated.
 /// </param>
 void readDataAsContinuousMemory(const char * fileName, shared sdblptr columnData [THREADS]);
 

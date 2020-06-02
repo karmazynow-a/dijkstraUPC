@@ -18,7 +18,7 @@
 /// Index of the source vertex.
 /// </param>
 /// <param name="size">
-/// Size of a single column. Is equal to adjacency matrix dimention.
+/// Size of a single column. It is equal to adjacency matrix dimention.
 /// </param>
 void initData(const int sourceVertex, const int size);
 
@@ -81,13 +81,13 @@ void performInnerLoop(const VertexData closestVertex, const ColumnsToProcess col
 
 
 /// <summary>
-/// Helper function whith debug printout with the state of algorithm
+/// Helper function with debug printout with the state of algorithm
 /// </summary>
 void printState();
 
 
 /// <summary>
-/// Save algorithm results to file 'results.UPC.txt`
+/// Saves algorithm results to file 'results.UPC.txt'
 /// </summary>
 /// <param name="numberOfColumns">
 /// Number of columns that are processed.
@@ -99,7 +99,7 @@ void printResultToFile(const int numberOfColumns, const int sourceVertex);
 
 
 /// <summary>
-/// Save found paths to given file.
+/// Saves found paths to given file.
 /// </summary>
 /// <param name="fp">
 /// Pointer to file to which paths should be saved.
@@ -114,7 +114,7 @@ void printPaths(FILE * fp, const int numberOfColumns, const int sourceVertex);
 
 
 /// <summary>
-/// Save found distances to given file.
+/// Saves found distances to given file.
 /// </summary>
 /// <param name="fp">
 /// Pointer to file to which distances should be saved.
