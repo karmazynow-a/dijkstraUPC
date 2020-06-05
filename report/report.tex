@@ -103,13 +103,31 @@ Niniejszy dokument stanowi dokumentację drugiego projektu wykonanego w ramach p
 \subsection{Algorytm Dijkstry}
 Zaimplementowany w ramach projektu algorytm Dijkstry jest algorytmem poszukiwania najkrótszych ścieżek z wybranego wierzchołka do wszystkich pozostałych w grafie (skierowanym lub nieskierowanym) o nieujemnych wagach krawędzi. Algorytm ten oparty jest na metodzie zachłannej: w każdym kroku wybierany jest wierzchołek, do którego dotarcie wiąże się z najmniejszym kosztem.
 
-\textbf{tutaj mozna jeszcze cos dopisac i ewentualnie pseudokod}
+\begin{lstlisting}[caption={Pseudokod klasycznego algorytmu Dijkstry.}, captionpos=b, mathescape=true, basicstyle=\scriptsize]
+V - zbior wierzcholkow
+E - zbior krawedzi z wagami
+v - wierzcholek startowy
+
+Dijkstra(V, E, v)
+    Q := $\emptyset$;
+    p := -1;
+    d := $\infty$
+    d(v) := 0
+    dopoki Q != V wykonaj
+        wybierz spoza zbioru Q wierzcholek u o najmniejszym koszcie d(u)
+        Q := Q $\cup$ {u}
+        dla kazdego sasiada w wierzcholka u spoza zbioru Q wykonaj
+            jesli d(w) > d(u) + E(w, u) to
+                d (w) :=  d(u) + E(w, u)
+                p(w) := u
+\end{lstlisting}
+
+
+W czasie wykonywania klasyczny algorytm Dijkstry operuje na dwóch tablicach. Jedna z nich, oznaczana zwykle literą \lstinline{d}, przechowuje koszty dotarcia z wierzchołka źródłowego do każdego z wierzchołków w badanym grafie. Druga, oznaczana litera \lstinline{p}, przechowuje informacje o poprzedniku każdego z wierzchołków - ta informacja pozwala, po zakończeniu działania algorytmu, odtworzyć ścieżkę z wierzchołka źródłowego do każdego wierzchołka w grafie. Ponadto w algorytmie przechowuje się zwykle zbiór (oznaczany np. literą \lstinline{Q}) wierzchołków, które zostały już przetworzone. Może on być zaimplementowany np. za pomocą tablicy wartości logicznych, co pozwala na łatwe współdzielenie go między wieloma procesami.
 
 
 \subsection{Zastosowane technologie}
-Przygotowana aplikacja napisana została w języku programowania C, z wykorzystaniem technologii UPC (\textit{Unified Parallel C}). 
-
-\textbf{tutaj jakies szczegoly dopisac}
+Przygotowana aplikacja napisana została w języku programowania C, z wykorzystaniem technologii UPC (\textit{Unified Parallel C}). Projekt korzysta w znacznym stopniu z dostarczanej przez \textit{UPC} funkcjonalności rozproszonej pamięci współdzielonej, w tym z tzw. alokacji katalogowej rozproszonych tablic. Wykorzystane zostały ponadto: pętla \lstinline{upc_forall} oraz operacje kolektywne (nagłówek \lstinline{upc_collective.h}). Struktura plików wejściowych i wyjściowych pozostała taka sama jak w przypadku aplikacji MPI. System budowania oparty został o narzędzie Make oraz prosty skrypt powłoki, dzięki czemu uruchomienie programu w środowisku pracowni wydziału nie powinno sprawiać trudności.
 
 
 \clearpage
@@ -117,7 +135,7 @@ Przygotowana aplikacja napisana została w języku programowania C, z wykorzysta
 Poniżej została opisana budowa projektu. Dokumentacja samego kodu przygotowana została za pomocą narzędzia \verb\Doxygen\. Instrukcja jej wygenerowania została przedstawiona w punkcie \ref{sec:doxy}.
 
 \vspace{0.5cm}
-
+\noindent
 Program został podzielony na poszczególne funkcjonalności:
 
 \begin{itemize}
@@ -126,7 +144,7 @@ Program został podzielony na poszczególne funkcjonalności:
 \end{itemize}
 
 \vspace{0.5cm}
-
+\noindent
 Zostały również przygotowane pomocnicze struktury do przetwarzania danych, takie jak:
 
 \begin{itemize}
@@ -137,7 +155,7 @@ Zostały również przygotowane pomocnicze struktury do przetwarzania danych, ta
 
 \clearpage
 \section{Działanie projektu}
-W poniższczej części sprawozdania, zostało omówione działanie programu implementującego algorytm Dijkstry z wykorzystaniem technologii \textit{UPC}. Składa się on z następujących części:
+W poniższej części dokumentacji zostało omówione działanie programu implementującego algorytm Dijkstry z wykorzystaniem technologii \textit{UPC}. Składa się on z następujących części:
 \begin{itemize}
 \item wczytanie danych wejściowych - początkowego wierzchołka oraz macierzy sąsiedztwa i jej rozmiaru,
 \item zapis kolumn do odpowiednich procesów,
@@ -150,9 +168,9 @@ W poniższczej części sprawozdania, zostało omówione działanie programu imp
 \subsection{Inicjalizacja}
 Działanie programu rozpoczyna się od wczytania danych wejściowych przez proces 0, takich jak wierzchołek, do którego będziemy szukać ścieżek oraz rozmiar macierzy sąsiedztwa przetwarzanego grafu. W przypadku braku tych informacji program kończy działanie.
 
-Jeśli dane są poprawne, następuje alokacja pamięci z wykorzystaniem funkcji \textit{UPC} - \textit{upc\_global\_alloc}. Najpierw proces 0 przygotowuje współdzielone dane, takie jak tablica z odległościami, z poprzednikami wierzchołków oraz z informacją, czy wierzchołek był już analizowany. Każdy proces będzie je wypełniał tylko dla swoich wierzchołków.
+Jeśli dane są poprawne, następuje alokacja pamięci z wykorzystaniem funkcji \textit{UPC} - \lstinline{upc_global_alloc}. Najpierw proces 0 przygotowuje współdzielone dane, takie jak tablica z odległościami, z poprzednikami wierzchołków oraz z informacją, czy wierzchołek był już analizowany. Każdy proces będzie je wypełniał tylko dla swoich wierzchołków.
 
-Następnie, dla każdego procesu następuje alokacja pamięci za pomocą  \textit{upc\_alloc} na odpowiednią liczbę kolumn. Dzięki tej funkcjonalności dane zostaną zaalokowane tylko dla danego procesu (nie są współdzielone). Dane są zapisywane do współdzielonego katalogu - każdy proces ma tam swój wskaźnik na kolumnę z danymi. Jeśli jest więcej kolumn niż procesów, procesy w kolejności od 0 otrzymują dodatkowe kolumny. Przykładowe rozdysponowanie zostało przedstawione poniżej. 
+Następnie, dla każdego procesu następuje alokacja pamięci za pomocą \lstinline{upc_alloc} na odpowiednią liczbę kolumn. Dzięki tej funkcjonalności dane zostaną zaalokowane tylko dla danego procesu (nie są współdzielone). Dane są zapisywane do współdzielonego katalogu - każdy proces ma tam swój wskaźnik na kolumnę z danymi. Jeśli jest więcej kolumn niż procesów, procesy w kolejności od 0 otrzymują dodatkowe kolumny. Przykładowe rozdysponowanie zostało przedstawione poniżej. 
 
 \begin{figure}[H]
 \centering
@@ -160,7 +178,7 @@ Następnie, dla każdego procesu następuje alokacja pamięci za pomocą  \texti
 \caption{Przydział kolumn do poszczególnych procesów oraz ich organizacja w pamięci. Przedstawiony przykład pokazuje sytuację, gdy macierz ma wymiar 5, a procesów jest 3 - do pierwszych dwóch została przydzielona dodatkowa kolumna.}
 \end{figure}
 
-Gdy pamięć została zaalokowana proces 0 wypełnia odpowiednie kolumny wartościami z macierzy sąsiedztwa. Wskaźniki do poszczególnych kolumn zostają zapisane do pomocniczej struktury \textit{ColumnsToProcess}, podobnie jak ich ilość, oraz rozmiar pojedynczej kolumny. Ułatwi to dostęp do danych w czasie działania algorytmu.
+Gdy pamięć została zaalokowana proces 0 wypełnia odpowiednie kolumny wartościami z macierzy sąsiedztwa. Wskaźniki do poszczególnych kolumn zostają zapisane do pomocniczej struktury \lstinline{ColumnsToProcess}, podobnie jak ich ilość, oraz rozmiar pojedynczej kolumny. Ułatwi to dostęp do danych w czasie działania algorytmu.
 
 Na koniec procesu inicjalizacji wypisana zostaje informacja ile kolumn otrzymał dany proces, oraz ich indeksy. Przykładowa informacja znajduje się poniżej.
 
@@ -171,13 +189,13 @@ Proces 2 posiada 3 kolumn o indeksach:  2,  5,  8,
 \end{lstlisting}
 
 \subsection{Implementacja i zakończenie algorytmu}
-Każdy proces przetwarza swoje przydzielone kolumny. Na samym początku znajdowany jest wierzchołek, do którego odległość jest najmniejsza wśród przydzielonych kolumn. Do przeglądania kolejnych elementów została użyta funkcja \textit{upc\_for\_all}, która umożliwia iterowanie po elementach znajdujących się w sąsiedztwie procesu.
+Każdy proces przetwarza swoje przydzielone kolumny. Na samym początku znajdowany jest wierzchołek, do którego odległość jest najmniejsza wśród przydzielonych kolumn. Do przeglądania kolejnych elementów została użyta pętla \lstinline{upc_forall}, która umożliwia iterowanie po elementach znajdujących się w sąsiedztwie procesu.
 
- Jest ona zapisywane w współdzielonej tablicy \textit{localMin}. Gdy wszystkie procesy zakończą tą czynność, za pomocą funkcjonalności \textit{UPC} - \textit{upc\_all\_reduce} znajdowane jest minimum i zapisywane do współdzielonego \textit{globalMin}. Teraz, przeszukując tablicę \textit{localMin} możemy wyznaczyć indeks wierzchołka z najmniejszą odległością. Na koniec głównej pętli każdy proces aktualizuje tablicę kosztów oraz poprzedników.
+ Jest ona zapisywane w współdzielonej tablicy \lstinline{localMin}. Gdy wszystkie procesy zakończą tą czynność, za pomocą funkcjonalności \lstinline{upc_all_reduce} znajdowane jest minimum i zapisywane do współdzielonego \lstinline{globalMin}. Teraz, przeszukując tablicę \lstinline{localMin} możemy wyznaczyć indeks wierzchołka z najmniejszą odległością. Na koniec głównej pętli każdy proces aktualizuje tablicę kosztów oraz poprzedników.
 
-Czynności te są wykonywane, aż nie uda się odnaleźć wierzchołka z minimalną odległością lub wszystkie wierzchołki zostaną przetworzone. Sprawdzane jest to za pomocą \textit{upc\_all\_reduce}, które sumuje wartości w tablicy z przetworzonymi wierzchołkami.
+Czynności te są wykonywane, aż nie uda się odnaleźć wierzchołka z minimalną odległością lub wszystkie wierzchołki zostaną przetworzone. Sprawdzane jest to za pomocą \lstinline{upc_all_reduce}, które sumuje wartości w tablicy z przetworzonymi wierzchołkami.
 
-Na sam koniec znalezione odległości oraz ścieżki zostają zapisane do pliku \textit{resultsUPC.txt}.
+Na sam koniec znalezione odległości oraz ścieżki zostają zapisane do pliku \lstinline{resultsUPC.txt}.
 
 \begin{figure}[H]
 \centering
