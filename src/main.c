@@ -1,3 +1,11 @@
+/** 
+*   @mainpage Dijkstra algorithm implementations
+*   Dijkstra algorithm implementations created using C and UPC.
+*   @author Aleksandra Poreba 
+*   @author Arkadiusz Kasprzak
+*/
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <upc.h>
