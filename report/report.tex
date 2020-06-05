@@ -117,6 +117,47 @@ Przygotowana aplikacja napisana została w języku programowania C, z wykorzysta
 
 \clearpage
 \section{Działanie projektu}
+W poniższczej części sprawozdania, zostało omówione działanie programu implementującego algorytm Dijkstry z wykorzystaniem technologii \textit{UPC}. Składa się on z następujących części:
+\begin{itemize}
+\item wczytanie danych wejściowych - początkowego wierzchołka oraz macierzy sąsiedztwa i jej rozmiaru,
+\item zapis kolumn do odpowiednich procesów,
+\item inicjalizacja współdzielonych danych,
+\item obliczanie odległości i ścieżek,
+\item zapis wyników do pliku oraz zakończenie działania.
+
+\end{itemize}
+
+\subsection{Inicjalizacja}
+Działanie programu rozpoczyna się od wczytania danych wejściowych przez proces 0, takich jak wierzchołek, do którego będziemy szukać ścieżek oraz rozmiar macierzy sąsiedztwa przetwarzanego grafu. W przypadku braku tych informacji program kończy działanie.
+
+Jeśli dane są poprawne, następuje alokacja pamięci z wykorzystaniem funkcji \textit{UPC} - \textit{upc\_global\_alloc}. Najpierw proces 0 przygotowuje współdzielone dane, takie jak tablica z odległościami, z poprzednikami wierzchołków oraz z informacją, czy wierzchołek był już analizowany. Każdy proces będzie je wypełniał tylko dla swoich wierzchołków.
+
+Następnie, dla każdego procesu następuje alokacja pamięci za pomocą  \textit{upc\_alloc} na odpowiednią liczbę kolumn. Dzięki tej funkcjonalności dane zostaną zaalokowane tylko dla danego procesu (nie są współdzielone). Dane są zapisywane do współdzielonego katalogu - każdy proces ma tam swój wskaźnik na kolumnę z danymi. Jeśli jest więcej kolumn niż procesów, procesy w kolejności od 0 otrzymują dodatkowe kolumny. Przykładowe rozdysponowanie zostało przedstawione poniżej. 
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{data_division.pdf}
+\caption{Przydział kolumn do poszczególnych procesów oraz ich organizacja w pamięci. Przedstawiony przykład pokazuje sytuację, gdy macierz ma wymiar 5, a procesów jest 3 - do pierwszych dwóch została przydzielona dodatkowa kolumna.}
+\end{figure}
+
+Gdy pamięć została zaalokowana proces 0 wypełnia odpowiednie kolumny wartościami z macierzy sąsiedztwa. Wskaźniki do poszczególnych kolumn zostają zapisane do pomocniczej struktury \textit{ColumnsToProcess}, podobnie jak ich ilość, oraz rozmiar pojedynczej kolumny. Ułatwi to dostęp do danych w czasie działania algorytmu.
+
+Na koniec procesu inicjalizacji wypisana zostaje informacja ile kolumn otrzymał dany proces, oraz ich indeksy. Przykładowa informacja znajduje się poniżej.
+
+\begin{lstlisting}
+Proces 0 posiada 4 kolumn o indeksach:  0,  3,  6,  9,
+Proces 1 posiada 3 kolumn o indeksach:  1,  4,  7,
+Proces 2 posiada 3 kolumn o indeksach:  2,  5,  8,
+\end{lstlisting}
+
+\subsection{Implementacja i zakończenie algorytmu}
+Każdy proces przetwarza swoje przydzielone kolumny. Na samym początku znajdowany jest wierzchołek, do którego odległość jest najmniejsza wśród przydzielonych kolumn. Do przeglądania kolejnych elementów została użyta funkcja \textit{upc\_for\_all}, która umożliwia iterowanie po elementach znajdujących się w sąsiedztwie procesu.
+
+ Jest ona zapisywane w współdzielonej tablicy \textit{localMin}. Gdy wszystkie procesy zakończą tą czynność, za pomocą funkcjonalności \textit{UPC} - \textit{upc\_all\_reduce} znajdowane jest minimum i zapisywane do współdzielonego \textit{globalMin}. Gdy globalny wierzchołek z najmniejszą odległością zostanie wyznaczony, każdy proces aktualizuje tablicę kosztów oraz poprzedników.
+
+Czynności te są wykonywane, aż nie uda się odnaleźć wierzchołka z minimalną odległością lub wszystkie wierzchołki zostaną przetworzone. Sprawdzane jest to za pomocą \textit{upc\_all\_reduce}, które sumuje wartości w tablicy z przetworzonymi wierzchołkami.
+
+Na sam koniec znalezione odległości oraz ścieżki zostają zapisane do pliku \textit{resultsUPC.txt}.
 
 \clearpage
 \section{Obsługa programu}
