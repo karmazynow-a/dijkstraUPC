@@ -114,6 +114,26 @@ Przygotowana aplikacja napisana została w języku programowania C, z wykorzysta
 
 \clearpage
 \section{Struktura projektu}
+Poniżej została opisana budowa projektu. Dokumentacja samego kodu przygotowana została za pomocą narzędzia \verb\Doxygen\. Instrukcja jej wygenerowania została przedstawiona w punkcie \ref{sec:doxy}.
+
+\vspace{0.5cm}
+
+Program został podzielony na poszczególne funkcjonalności:
+
+\begin{itemize}
+\item działanie algorytmu, czyli  szukanie najmniejszej odległości, aktualizacja ścieżek, jego inicjalizacja, zapis odległości i ścieżek do pliku,
+\item dodatkowe narzędzia związane z działaniem programu, a nie z algorytmem, takie jak odczyt danych, alokacja pamięci.
+\end{itemize}
+
+\vspace{0.5cm}
+
+Zostały również przygotowane pomocnicze struktury do przetwarzania danych, takie jak:
+
+\begin{itemize}
+\item \verb\VertexData\ reprezentująca poszczególny wierzchołek, jego indeks w macierzy sąsiedztwa oraz koszt dotarcia do niego,
+\item \verb\ColumnData\ przechowująca dane o poszczególnej kolumnie, jej indeksie w macierzy sąsiedztwa oraz wskaźniku na początek kolumny,
+\item \verb\ColumnsToProcess\ zawierająca listę kolumn dla danego procesu, ich ilość oraz rozmiar.
+\end{itemize}
 
 \clearpage
 \section{Działanie projektu}
@@ -164,6 +184,7 @@ Na sam koniec znalezione odległości oraz ścieżki zostają zapisane do pliku 
 Niniejsza część dokumentacji przedstawia informacje związane z kompilacją i uruchomieniem projektu.
 
 \subsection{Obsługa projektu na pracowni WFiIS}
+\label{sec:doxy}
 W celu ułatwienia kompilacji i uruchomienia projektu na pracowni Wydziału Fizyki i Informatyki Stosowanej przygotowane zostały dedykowane pliki \lstinline{Makefile} oraz skrypty do obsługi programu. Znajdują się one w katalogu \lstinline{build_uni}. Aby dokonać koniecznej konfiguracji środowiska oraz, następnie, kompilacji programu należy wykonać następujące polecenia:
 \begin{lstlisting}
 cd build_uni
