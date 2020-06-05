@@ -173,11 +173,23 @@ Proces 2 posiada 3 kolumn o indeksach:  2,  5,  8,
 \subsection{Implementacja i zakończenie algorytmu}
 Każdy proces przetwarza swoje przydzielone kolumny. Na samym początku znajdowany jest wierzchołek, do którego odległość jest najmniejsza wśród przydzielonych kolumn. Do przeglądania kolejnych elementów została użyta funkcja \textit{upc\_for\_all}, która umożliwia iterowanie po elementach znajdujących się w sąsiedztwie procesu.
 
- Jest ona zapisywane w współdzielonej tablicy \textit{localMin}. Gdy wszystkie procesy zakończą tą czynność, za pomocą funkcjonalności \textit{UPC} - \textit{upc\_all\_reduce} znajdowane jest minimum i zapisywane do współdzielonego \textit{globalMin}. Gdy globalny wierzchołek z najmniejszą odległością zostanie wyznaczony, każdy proces aktualizuje tablicę kosztów oraz poprzedników.
+ Jest ona zapisywane w współdzielonej tablicy \textit{localMin}. Gdy wszystkie procesy zakończą tą czynność, za pomocą funkcjonalności \textit{UPC} - \textit{upc\_all\_reduce} znajdowane jest minimum i zapisywane do współdzielonego \textit{globalMin}. Teraz, przeszukując tablicę \textit{localMin} możemy wyznaczyć indeks wierzchołka z najmniejszą odległością. Na koniec głównej pętli każdy proces aktualizuje tablicę kosztów oraz poprzedników.
 
 Czynności te są wykonywane, aż nie uda się odnaleźć wierzchołka z minimalną odległością lub wszystkie wierzchołki zostaną przetworzone. Sprawdzane jest to za pomocą \textit{upc\_all\_reduce}, które sumuje wartości w tablicy z przetworzonymi wierzchołkami.
 
 Na sam koniec znalezione odległości oraz ścieżki zostają zapisane do pliku \textit{resultsUPC.txt}.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{diagram1.pdf}
+\caption{Schemat blokowy ilustrujący przebieg programu.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{diagram2.pdf}
+\caption{Schemat blokowy ilustrujący przebieg algorytmu.}
+\end{figure}
 
 \clearpage
 \section{Obsługa programu}
