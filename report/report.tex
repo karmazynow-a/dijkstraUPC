@@ -139,7 +139,7 @@ Poniżej została opisana budowa projektu. Dokumentacja samego kodu przygotowana
 Program został podzielony na poszczególne funkcjonalności:
 
 \begin{itemize}
-\item działanie algorytmu, czyli  szukanie najmniejszej odległości, aktualizacja ścieżek, jego inicjalizacja, zapis odległości i ścieżek do pliku,
+\item działanie algorytmu, czyli  jego inicjalizacja, szukanie najmniejszej odległości, aktualizacja ścieżek, czy zapis wyników do pliku,
 \item dodatkowe narzędzia związane z działaniem programu, a nie z algorytmem, takie jak odczyt danych, alokacja pamięci.
 \end{itemize}
 
@@ -148,7 +148,7 @@ Program został podzielony na poszczególne funkcjonalności:
 Zostały również przygotowane pomocnicze struktury do przetwarzania danych, takie jak:
 
 \begin{itemize}
-\item \verb\VertexData\ reprezentująca poszczególny wierzchołek, jego indeks w macierzy sąsiedztwa oraz koszt dotarcia do niego,
+\item \verb\VertexData\ reprezentująca poszczególny wierzchołek, zawiera jego indeks w macierzy sąsiedztwa oraz koszt dotarcia do niego,
 \item \verb\ColumnData\ przechowująca dane o poszczególnej kolumnie, jej indeksie w macierzy sąsiedztwa oraz wskaźniku na początek kolumny,
 \item \verb\ColumnsToProcess\ zawierająca listę kolumn dla danego procesu, ich ilość oraz rozmiar.
 \end{itemize}
@@ -170,7 +170,7 @@ Działanie programu rozpoczyna się od wczytania danych wejściowych przez proce
 
 Jeśli dane są poprawne, następuje alokacja pamięci z wykorzystaniem funkcji \textit{UPC} - \lstinline{upc_global_alloc}. Najpierw proces 0 przygotowuje współdzielone dane, takie jak tablica z odległościami, z poprzednikami wierzchołków oraz z informacją, czy wierzchołek był już analizowany. Każdy proces będzie je wypełniał tylko dla swoich wierzchołków.
 
-Następnie, dla każdego procesu następuje alokacja pamięci za pomocą \lstinline{upc_alloc} na odpowiednią liczbę kolumn. Dzięki tej funkcjonalności dane zostaną zaalokowane tylko dla danego procesu (nie są współdzielone). Dane są zapisywane do współdzielonego katalogu - każdy proces ma tam swój wskaźnik na kolumnę z danymi. Jeśli jest więcej kolumn niż procesów, procesy w kolejności od 0 otrzymują dodatkowe kolumny. Przykładowe rozdysponowanie zostało przedstawione poniżej. 
+Następnie, dla każdego procesu następuje alokacja pamięci za pomocą \lstinline{upc_alloc} na odpowiednią liczbę kolumn. Dzięki tej funkcjonalności pamięć zostanie zaalokowana tylko dla danego procesu, w jego sąsiedztwie (nie jest współdzielona). Wskaźniki te zapisywane do współdzielonego katalogu - każdy proces ma tam swoje miejsce. Jeśli jest więcej kolumn niż procesów, procesy w kolejności od 0 otrzymują dodatkowe kolumny, które zapisywane są w pamięci ciągłej. Przykładowe rozdysponowanie zostało przedstawione poniżej. 
 
 \begin{figure}[H]
 \centering
@@ -189,9 +189,9 @@ Proces 2 posiada 3 kolumn o indeksach:  2,  5,  8,
 \end{lstlisting}
 
 \subsection{Implementacja i zakończenie algorytmu}
-Każdy proces przetwarza swoje przydzielone kolumny. Na samym początku znajdowany jest wierzchołek, do którego odległość jest najmniejsza wśród przydzielonych kolumn. Do przeglądania kolejnych elementów została użyta pętla \lstinline{upc_forall}, która umożliwia iterowanie po elementach znajdujących się w sąsiedztwie procesu.
+Każdy proces przetwarza swoje przydzielone kolumny. Na samym początku znajdowany jest wierzchołek, do którego odległość jest najmniejsza wśród wszystkich przydzielonych kolumn. Do przeglądania kolejnych elementów została użyta pętla \lstinline{upc_forall}, która umożliwia iterowanie po elementach znajdujących się w sąsiedztwie procesu.
 
- Jest ona zapisywane w współdzielonej tablicy \lstinline{localMin}. Gdy wszystkie procesy zakończą tą czynność, za pomocą funkcjonalności \lstinline{upc_all_reduce} znajdowane jest minimum i zapisywane do współdzielonego \lstinline{globalMin}. Teraz, przeszukując tablicę \lstinline{localMin} możemy wyznaczyć indeks wierzchołka z najmniejszą odległością. Na koniec głównej pętli każdy proces aktualizuje tablicę kosztów oraz poprzedników.
+ Najmniejsze odległości zapisywane są w współdzielonej tablicy \lstinline{localMin}. Gdy wszystkie procesy zakończą tą czynność, za pomocą funkcjonalności \lstinline{upc_all_reduce} znajdowane jest minimum i zapisywane do współdzielonego \lstinline{globalMin}. Teraz, przeszukując tablicę \lstinline{localMin} możemy wyznaczyć indeks wierzchołka z najmniejszą odległością. Na koniec głównej pętli każdy proces aktualizuje tablicę kosztów oraz poprzedników.
 
 Czynności te są wykonywane, aż nie uda się odnaleźć wierzchołka z minimalną odległością lub wszystkie wierzchołki zostaną przetworzone. Sprawdzane jest to za pomocą \lstinline{upc_all_reduce}, które sumuje wartości w tablicy z przetworzonymi wierzchołkami.
 
