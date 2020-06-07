@@ -1,0 +1,114 @@
+%% beamerthemeAGH.sty
+%% Copyright 2009-2011 Piotr Wydrych
+%
+% This work may be distributed and/or modified under the
+% conditions of the LaTeX Project Public License, either version 1.3
+% of this license or (at your option) any later version.
+% The latest version of this license is in
+%   http://www.latex-project.org/lppl.txt
+% and version 1.3 or later is part of all distributions of LaTeX
+% version 2005/12/01 or later.
+%
+% This work has the LPPL maintenance status `maintained'.
+% 
+% The Current Maintainer of this work is Piotr Wydrych.
+%
+% This work consists of the file beamerthemeAGH.sty.
+
+\renewcommand{\encodingdefault}{T1}
+
+\def\@website{\@empty}
+\def\website#1{\def\@website{#1}}
+
+\definecolor{AGHgreen}{rgb}{0,0.412,0.236}
+\definecolor{AGHblack}{rgb}{0.118,0.118,0.118}
+\definecolor{AGHred}{rgb}{0.655,0.099,0.189}
+
+\setbeamercolor{normal text}{fg=AGHblack,bg=white}
+\setbeamercolor{alerted text}{fg=AGHred}
+\setbeamercolor{example text}{fg=AGHgreen}
+\setbeamerfont{structure}{series=\bfseries}
+\setbeamercolor{structure}{fg=AGHblack}
+
+\setbeamerfont{block title}{size={}}
+\setbeamercolor{block title}{use=structure,fg=white,bg=structure.fg}
+\setbeamercolor{block title alerted}{use=alerted text,fg=white,bg=alerted text.fg}
+\setbeamercolor{block title example}{use=example text,fg=white,bg=example text.fg}
+
+\setbeamercolor{block body}{parent=normal text,use=block title,bg=block title.bg!10!bg}
+\setbeamercolor{block body alerted}{parent=normal text,use=block title alerted,bg=block title alerted.bg!10!bg}
+\setbeamercolor{block body example}{parent=normal text,use=block title example,bg=block title example.bg!10!bg}
+
+\useinnertheme[shadow=false]{rounded}
+
+\setbeamerfont{frametitle}{size=\normalsize}
+\setbeamerfont{framesubtitle}{size=\footnotesize}
+\setbeamertemplate{frametitle}
+{
+    \begin{beamercolorbox}[wd=\paperwidth,ht=.2088\paperheight,left,leftskip=.1614\paperwidth,rightskip=.0394\paperwidth]{frametitle}
+    \usebeamerfont{frametitle}%
+    \strut\insertframetitle\strut\par%
+    {%
+      \ifx\insertframesubtitle\@empty%
+      \else%
+     {\usebeamerfont{framesubtitle}\usebeamercolor[fg]{framesubtitle}\strut\insertframesubtitle\strut\par}%
+      \fi
+    }%
+    \vskip.02\paperheight%
+  \end{beamercolorbox}%
+}
+
+\setbeamertemplate{navigation symbols}{}
+\setbeamercolor*{date in head/foot}{fg=white!80!black}
+\setbeamertemplate{footline}{%
+    \begin{beamercolorbox}[wd=\paperwidth,ht=.02391\paperheight,dp=.01076\paperheight,center]{date in head/foot}%
+        \usebeamerfont{date in head/foot}\insertframenumber{}/\inserttotalframenumber%
+    \end{beamercolorbox}%
+}
+
+\setbeamerfont{title}{size=\normalsize}
+\setbeamerfont{subtitle}{size=\footnotesize}
+\setbeamerfont{author}{size=\tiny}
+\setbeamerfont{website}{size=\tiny}
+\setbeamerfont{institute}{size=\tiny}
+\setbeamerfont{date}{size=\tiny}
+\setbeamertemplate{title page}{%
+    \begin{beamercolorbox}[ht=.3963\paperheight]{title}\end{beamercolorbox}
+    \begin{beamercolorbox}[left,leftskip=.1614\paperwidth]{title}
+      \usebeamerfont{title}\inserttitle\par%
+      \ifx\insertsubtitle\@empty%
+      \else%
+        \vskip0.25em%
+        {\usebeamerfont{subtitle}\usebeamercolor[fg]{subtitle}\insertsubtitle\par}%
+      \fi%
+    \end{beamercolorbox}%
+    \vfill\vfill%
+    \begin{beamercolorbox}[left,leftskip=.1614\paperwidth]{author}%
+      \usebeamerfont{author}\insertauthor%
+    \end{beamercolorbox}%
+    %\vfill%
+    \ifx\@website\@empty%
+    \else%
+      \begin{beamercolorbox}[left,leftskip=.1614\paperwidth]{website}%
+        \usebeamerfont{website}\@website%
+      \end{beamercolorbox}%
+    \fi%
+    \vfill%
+    \begin{beamercolorbox}[left,leftskip=.1614\paperwidth]{institute}%
+      \usebeamerfont{institute}\insertinstitute%
+    \end{beamercolorbox}%
+    \vfill%
+    \begin{beamercolorbox}[left,leftskip=.1614\paperwidth]{date}%
+      \usebeamerfont{date}\insertdate%
+    \end{beamercolorbox}%
+}
+
+\setbeamercovered{dynamic}
+
+\pgfdeclareimage[width=\paperwidth,height=\paperheight]{agh-pl-title}{beamerthemeAGH-pl-title}
+\pgfdeclareimage[width=\paperwidth,height=\paperheight]{agh-en-title}{beamerthemeAGH-en-title}
+\pgfdeclareimage[width=\paperwidth,height=\paperheight]{agh-slide}{beamerthemeAGH-slide}
+
+\def\titleframe[#1]{{\setbeamertemplate{background}{\pgfuseimage{agh-#1-title}}\frame{\titlepage}}}
+\setbeamertemplate{background}{\pgfuseimage{agh-slide}}
+
